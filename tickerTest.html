@@ -1,0 +1,69 @@
+<html>
+  <body>
+    <button onclick="showTicks()">Show Ticks</button>
+
+
+    <script src="tickapi.js"></script>
+    <script>
+      var api_key = "kitefront";
+      var public_token = "15e48aaa500ce39e13590f15b21ce7d7";
+      var user_id = "PA1154";
+      var access_token = "jzHhdhX6JASkNDHMTGt66P24hyIVf9J2";
+
+      var codes = {
+        jpassociate: 2933761,
+        gmrinfra: 3463169,
+        sbin: 779521,
+        maruti: 2815745
+      };
+
+      // var ws = new WebSocket("wss://ws.zerodha.com/?api_key=kitefront&user_id=PA1154&public_token=4f54ccaf6dfc28180a061fd677640e67");
+      // ws.binaryType = "arraybuffer";
+      
+
+      // ws.onopen = function() {
+      //   // Subscribe to quotes for TATAMOTORS (884737)
+      //   var message = {"a": "subscribe", "v": [884737]};
+      //   ws.send(JSON.stringify(message));
+
+      //   // Set TATAMOTORS (884737) to 'ltp' to only receive the LTP.
+      //   message = {"a": "mode", "v": ["ltp", [884737]]};
+      //   ws.send(JSON.stringify(message));
+
+      //   ws.onmessage = function(event) {
+      //     console.log(event.data);
+      //   }
+      // }
+
+      var ticker = new KiteTicker(api_key, user_id, public_token);
+      // set autoreconnect with 10 maximum reconnections and 5 second interval
+    ticker.autoReconnect(true, 10, 5)
+    ticker.connect();
+    ticker.on("tick", setTick);
+    ticker.on("connect", subscribe);
+
+    var arr = [];
+    var time = [];
+    function setTick(ticks) {
+      //console.log("Ticks", ticks[0]);
+      arr.push(ticks[0].LastTradedPrice);
+      time.push(new Date().getTime());
+    }
+
+    function subscribe() {
+      var items = [codes.maruti];
+      ticker.subscribe(items);
+      ticker.setMode(ticker.modeLTP, items);
+    }
+
+    // setInterval(function() {
+    //   console.log(JSON.stringify(arr));
+    // }, 10000);
+
+    function showTicks() {
+      console.log(JSON.stringify(arr));
+      console.log(JSON.stringify(time));
+    }
+    </script>
+  </body>
+</html>
