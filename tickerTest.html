@@ -14,7 +14,8 @@
         jpassociate: 2933761,
         gmrinfra: 3463169,
         sbin: 779521,
-        maruti: 2815745
+        maruti: 2815745,
+        rcom: 3375873
       };
 
       // var ws = new WebSocket("wss://ws.zerodha.com/?api_key=kitefront&user_id=PA1154&public_token=4f54ccaf6dfc28180a061fd677640e67");
@@ -51,7 +52,7 @@
     }
 
     function subscribe() {
-      var items = [codes.maruti];
+      var items = [codes.rcom];
       ticker.subscribe(items);
       ticker.setMode(ticker.modeLTP, items);
     }
