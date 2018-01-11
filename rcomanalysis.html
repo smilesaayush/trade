@@ -1,0 +1,88 @@
+<html>
+    <body>
+      <script src="tickapi.js"></script>
+      <script>
+        var api_key = "kitefront";
+        var public_token = "245f2e5d30b36a5c07fc03b01bf5f45b";
+        var user_id = "PA1154";
+        var access_token = "1lkUMxYqc6GoNVHzjQRKGH4IoqWqqy1q";
+  
+        var codes = {
+          jpassociate: 2933761,
+          gmrinfra: 3463169,
+          sbin: 779521,
+          maruti: 2815745,
+          rcom: 3375873
+        };
+  
+  
+      var ticker = new KiteTicker(api_key, user_id, public_token);
+      // set autoreconnect with 10 maximum reconnections and 5 second interval
+      ticker.autoReconnect(true, 10, 5)
+      ticker.connect();
+      ticker.on("tick", setTick);
+      ticker.on("connect", subscribe);
+  
+      var arr = [];
+      var time = [];
+      function setTick(ticks) {
+        //console.log("Ticks", ticks[0]);
+        //arr.push(ticks[0].LastTradedPrice);
+        //time.push(new Date().getTime());
+        rcom(ticks[0].LastTradedPrice, new Date().getTime());
+      }
+  
+      function subscribe() {
+        var items = [codes.rcom];
+        ticker.subscribe(items);
+        ticker.setMode(ticker.modeLTP, items);
+      }
+  
+      var ltp = null;
+      var ltime = null;
+      var diff;
+      var timeDiff;
+      var renkoTileSize = 0.1;
+      var clubTime = 5 * 60 * 1000; //in milliseconds
+      var renkoDiff = 0;
+      var renkoTimeDiff = 0;
+      var renko = [];
+
+
+      function rcom(price, time) {
+        console.log(price, time);
+        if(!ltp) {
+          ltp = price;
+          ltime = time;
+          return;
+        }
+        
+        diff = price - ltp;
+        timeDiff = time - ltime;
+        renkoDiff += diff;
+        renkoTimeDiff += timeDiff;
+
+        if(renkoTimeDiff >= clubTime) {
+          //up trend
+          if(renkoDiff >= renkoTileSize) {
+            renko.push(1);
+            renkoDiff = 0;
+          }
+          //down trend
+          else if(renkoDiff <= (-1 * renkoTileSize)) {
+            renko.push(0);
+            renkoDiff = 0;
+          }
+
+          console.log(renko);
+          renkoTimeDiff = 0;
+        }
+        
+        ltp = price;
+        ltime = time;
+      }
+
+
+      </script>
+    </body>
+  </html>
