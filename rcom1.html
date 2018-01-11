@@ -27,7 +27,7 @@ var times = [1515058164939,1515058166412,1515058167465,1515058170460,15150581719
         if(!lprice) {
           lprice = price;
           ltime = time;
-          tilePoint = lprice;
+          tilePoint = lprice; 
           renkoSum = 0;
           return;
         }
@@ -51,6 +51,7 @@ var times = [1515058164939,1515058166412,1515058167465,1515058170460,15150581719
             }
             else {
               checking = 1;
+              console.log("checking");
             }
           }
           else {
@@ -77,6 +78,7 @@ var times = [1515058164939,1515058166412,1515058167465,1515058170460,15150581719
             }
             else {
               checking = 0;
+              console.log("checking");
             }
           }
           else {
