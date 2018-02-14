@@ -1,0 +1,209 @@
+<html>
+  <head>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        box-sizing: border-box;
+      }
+
+      #main{
+        margin-top: 30px;
+        text-align: center;
+      }
+
+      .width80per{
+        width: 80%;
+        margin: auto;
+      }
+
+      .button{
+        background: green;
+        color: white;
+        padding: 5px 10px;
+        margin: 5px 0px;
+        width: 150px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 20px;
+      }
+
+      .header-input {
+        padding: 5px;
+        margin: 5px;
+        border-radius: 10px;
+        width: 500px;
+      }
+
+      #equity_code {
+        width: 250px;
+      }
+    </style>
+  </head>
+  </head>
+  <body>
+    <div id="main">
+      <header>
+        <input id="public_token" class="header-input" placeholder="Public token"/><br>
+        <input id="access_token" class="header-input" placeholder="Access token"/><br>
+        <select id="equity_code" class="header-input">
+          <option value="2933761">JP Associate</option>
+          <option value="3463169">GMR Infra</option>
+          <option value="779521">SBI</option>
+          <option value="2815745">Maruti</option>
+          <option value="3375873">RCOM</option>
+        </select>
+        <br>
+        <input type="button" class="button" value="Start" onclick="start()"/>
+      </header>
+      <br>
+      <hr class="width80per">
+      <section>
+
+      </section>
+    </div>
+
+    <script src="tickapi.js"></script>
+    <script>
+      var api_key = "kitefront";
+      var user_id = "PA1154";
+      var public_token;
+      var access_token;
+      var equity_code;
+
+      function start() {
+        public_token = document.getElementById("public_token").value.trim();
+        access_token = document.getElementById("access_token").value.trim();
+        equity_code = Number(document.getElementById("equity_code").value);
+        var ticker = new KiteTicker(api_key, user_id, public_token);
+
+        // set autoreconnect with 10 maximum reconnections and 5 second interval
+        ticker.autoReconnect(true, 10, 5)
+        ticker.connect();
+        ticker.on("tick", setTick);
+        ticker.on("connect", subscribe);
+    
+        var arr = [];
+        var time = [];
+        function setTick(ticks) {
+          process(ticks[0].LastTradedPrice, new Date().getTime());
+        }
+    
+        function subscribe() {
+          var items = [equity_code];
+          ticker.subscribe(items);
+          ticker.setMode(ticker.modeLTP, items);
+        }
+    
+        var i;
+        var priceDiff;
+        var timeDiff;
+        var renkoTileSize = 0.1;
+        var clubTime = 5 * 60 * 1000; //in milliseconds
+        var renkoPriceDiff = 0;
+        var renkoTimeDiff = 0;
+        var tilePoint;
+        var renko = [];
+        var renkoPriceChart = [];
+        var renkoTimeChart = [];
+        var renkoSum = 0;
+        var lprice = null;
+        var ltime = null;
+        var ltrend;
+        var trend = null;
+        var checking = null;
+        
+        function process(price, time) {
+          console.log(price, time);
+          if(!lprice) {
+            lprice = price;
+            ltime = time;
+            tilePoint = lprice; 
+            renkoSum = 0;
+            return;
+          }
+  
+          priceDiff = price - lprice;
+          timeDiff = time - ltime;
+          renkoPriceDiff = (price - tilePoint).toFixed(2);
+          renkoTimeDiff = renkoTimeDiff + timeDiff;
+  
+          if(renkoPriceDiff >= renkoTileSize) {
+            renko.push(1);
+            renkoPriceChart.push(price);
+            renkoTimeChart.push(time);
+            tilePoint = tilePoint + renkoTileSize;
+            renkoPriceDiff = 0;
+            if(trend === 0) {
+              if(checking === 1) {
+                trend = 1;
+                checking = null;
+                console.log("buy call ", price);
+              }
+              else {
+                checking = 1;
+                console.log("checking");
+              }
+            }
+            else {
+              trend = 1;
+              if(checking === 0) {
+                checking = null;
+              }
+              else {
+                console.log("buy call ", price);
+              }
+            }
+          }
+          else if(renkoPriceDiff <= (-1 * renkoTileSize)) {
+            renko.push(0);
+            renkoPriceChart.push(price);
+            renkoTimeChart.push(time);
+            tilePoint = tilePoint - renkoTileSize;
+            renkoPriceDiff = 0;
+            if(trend === 1) {
+              if(checking === 0) {
+                trend = 0;
+                checking = null;
+                console.log("sell call ", price);
+              }
+              else {
+                checking = 0;
+                console.log("checking");
+              }
+            }
+            else {
+              trend = 0;
+              if(checking === 1) {
+                checking = null;
+              }
+              else {
+                console.log("sell call ", price);
+              }
+            }
+          }
+  
+          if(renkoTimeDiff >= clubTime) {
+            //renko.push("-");
+            //console.log(price);
+            renkoTimeDiff = 0;
+          }
+  
+          lprice = price;
+          ltime = time;
+        }
+      }
+      
+
+      
+  
+      
+
+
+      </script>
+  </body>
+</html>
