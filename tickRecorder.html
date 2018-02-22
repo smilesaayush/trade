@@ -29,14 +29,14 @@
     var time = [];
     function setTick(ticks) {
       //console.log("Ticks", ticks[0]);
-      arr.push(ticks[0]);
+      arr.push(ticks[0].LastTradedPrice);
       time.push(new Date().getTime());
     }
 
     function subscribe() {
       var items = [codes.rcom];
       ticker.subscribe(items);
-      ticker.setMode(ticker.modeFull, items);
+      ticker.setMode(ticker.modeLTP, items);
     }
 
     // setInterval(function() {

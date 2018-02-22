@@ -1,0 +1,69 @@
+<html>
+    <body>
+      <script>
+      
+        var i;
+        var priceDiff;
+        var timeDiff;
+        var renkoTileSize = 0.1;
+        var clubTime = 2 * 60 * 1000; //in milliseconds
+        var renkoPriceDiff = 0;
+        var renkoTimeDiff = 0;
+        var tilePoint;
+        var renko = [];
+        var renkoPriceChart = [];
+        var renkoTimeChart = [];
+        var renkoSum = 0;
+        var lprice = null;
+        var ltime = null;
+        var ltrend;
+        var trend = null;
+        var checking = null;
+
+
+
+        function process(price, time) {
+          if(!lprice) {
+            lprice = price;
+            ltime = time;
+            tilePoint = lprice; 
+            renkoSum = 0;
+            return;
+          }
+  
+          priceDiff = price - lprice;
+          timeDiff = time - ltime;
+          
+          renkoTimeDiff = renkoTimeDiff + timeDiff;
+  
+
+          if(renkoTimeDiff >= clubTime) {
+            renkoPriceDiff = Number((price - tilePoint).toFixed(2));
+            renkoSum = parseInt(renkoPriceDiff / renkoTileSize);
+
+            if(renkoSum >= renkoTileSize) {
+              tilePoint = Number((tilePoint + renkoPriceDiff).toFixed(2));
+              console.log("buy * " + renkoSum, tilePoint, new Date(time));
+            }
+            else if(renkoSum <= (-1 * renkoTileSize)) {
+              tilePoint = Number((tilePoint + renkoPriceDiff).toFixed(2));
+              console.log("sell * " + -1 *renkoSum, tilePoint, new Date(time));
+            }
+            renkoSum = 0;
+            renkoTimeDiff = 0;
+          }
+  
+          lprice = price;
+          ltime = time;
+        }
+  
+      </script>
+  
+      <script src="data/rcomdata1.js"></script>
+      <script>
+        ticks.forEach(function(tick, index) {
+          process(tick, times[index]);
+        });
+      </script>
+    </body>
+  </html>
