@@ -6,7 +6,7 @@
         var priceDiff;
         var timeDiff;
         var renkoTileSize = 0.1;
-        var clubTime = 2 * 60 * 1000; //in milliseconds
+        var clubTime = 10 * 60 * 1000; //in milliseconds
         var renkoPriceDiff = 0;
         var renkoTimeDiff = 0;
         var tilePoint;
@@ -41,11 +41,11 @@
             renkoPriceDiff = Number((price - tilePoint).toFixed(2));
             renkoSum = parseInt(renkoPriceDiff / renkoTileSize);
 
-            if(renkoSum >= renkoTileSize) {
+            if(renkoSum >= 1) {
               tilePoint = Number((tilePoint + renkoPriceDiff).toFixed(2));
               console.log("buy * " + renkoSum, tilePoint, new Date(time));
             }
-            else if(renkoSum <= (-1 * renkoTileSize)) {
+            else if(renkoSum <= -1) {
               tilePoint = Number((tilePoint + renkoPriceDiff).toFixed(2));
               console.log("sell * " + -1 *renkoSum, tilePoint, new Date(time));
             }
@@ -59,7 +59,7 @@
   
       </script>
   
-      <script src="data/rcomdata1.js"></script>
+      <script src="data/rcom3.js"></script>
       <script>
         ticks.forEach(function(tick, index) {
           process(tick, times[index]);

@@ -19,6 +19,7 @@
       var ltrend;
       var trend = null;
       var checking = null;
+      var result = [];
       
       function process(price, time) {
         if(!lprice) {
@@ -44,7 +45,8 @@
             if(checking === 1) {
               trend = 1;
               checking = null;
-              console.log("buy call ", price);
+              console.log("buy ", price, new Date(time));
+              result.push(1);
             }
             else {
               checking = 1;
@@ -57,7 +59,8 @@
               checking = null;
             }
             else {
-              console.log("buy call ", price);
+              console.log("buy ", price, new Date(time));
+              result.push(1);
             }
           }
         }
@@ -71,7 +74,8 @@
             if(checking === 0) {
               trend = 0;
               checking = null;
-              console.log("sell call ", price);
+              console.log("sell ", price, new Date(time));
+              result.push(0);
             }
             else {
               checking = 0;
@@ -84,7 +88,8 @@
               checking = null;
             }
             else {
-              console.log("sell call ", price);
+              console.log("sell ", price, new Date(time));
+              result.push(0);
             }
           }
         }
@@ -101,11 +106,23 @@
 
     </script>
 
-    <script src="data/rcomdata1.js"></script>
+    <script src="data/rcom4.js"></script>
     <script>
       ticks.forEach(function(tick, index) {
         process(tick, times[index]);
       });
+
+      var x = 0;
+      var y = 0;
+      for(let i = 1;i<result.length;i++){
+        if(result[i] == result[i-1]){
+          x++;
+        }
+        else {
+          y++;
+        }
+      }
+      console.log(x, y);
     </script>
   </body>
 </html>
